@@ -1,4 +1,4 @@
-# C++ Sample Project
+# learnAICoding
 
 A modern C++ project demonstrating best practices with CMake build system.
 
@@ -12,7 +12,7 @@ A modern C++ project demonstrating best practices with CMake build system.
 ## Project Structure
 
 ```
-cpp-sample-project/
+learnAICoding/
 ├── src/           # Source files (.cpp)
 ├── include/       # Header files (.h/.hpp)
 ├── tests/         # Test files
@@ -32,7 +32,7 @@ make
 ## Running
 
 ```bash
-./build/cpp-sample-project
+./build/learnAICoding
 ```
 
 ## Requirements
