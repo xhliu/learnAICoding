@@ -34,20 +34,17 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          # Read the PR diff
-          DIFF=$(cat pr.diff)
+          # Create review prompt
+          cat > prompt.txt << 'EOF'
+          You are an expert code reviewer. Review the following pull request changes and provide:
+          1. Summary of changes
+          2. Potential issues or bugs
+          3. Code quality assessment
+          4. Security concerns (if any)
+          5. Performance considerations
+          6. Suggestions for improvement
 
-          # Create review prompt file
-          cat > prompt.txt <<'PROMPT_EOF'
-You are an expert code reviewer. Review the following pull request changes and provide:
-1. Summary of changes
-2. Potential issues or bugs
-3. Code quality assessment
-4. Security concerns (if any)
-5. Performance considerations
-6. Suggestions for improvement
-
-PROMPT_EOF
+          EOF
 
           echo "PR Title: $PR_TITLE" >> prompt.txt
           echo "PR Description: $PR_BODY" >> prompt.txt
