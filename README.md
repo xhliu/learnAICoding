@@ -24,7 +24,7 @@ learnAICoding/
 ## Building
 
 ```bash
-cd build
+mkdir -p build && cd build
 cmake ..
 make
 ```
@@ -32,7 +32,11 @@ make
 ## Running
 
 ```bash
+# Run the demo
 ./build/learnAICoding
+
+# Run the tests
+./build/test_string_utils
 ```
 
 ## Requirements
