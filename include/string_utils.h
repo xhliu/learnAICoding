@@ -33,6 +33,14 @@ namespace StringUtils {
      * @return Trimmed string
      */
     std::string trim(const std::string& str);
+
+    /**
+     * Checks if a string starts with a given prefix
+     * @param str Input string
+     * @param prefix Prefix to check for
+     * @return True if string starts with prefix, false otherwise
+     */
+    bool startsWith(const std::string& str, const std::string& prefix);
 }
 
 #endif // STRING_UTILS_H
