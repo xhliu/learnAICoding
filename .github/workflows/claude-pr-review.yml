@@ -31,42 +31,50 @@ jobs:
         id: claude-review
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           # Read the PR diff
           DIFF=$(cat pr.diff)
 
-          # Create review prompt
-          REVIEW_PROMPT="You are an expert code reviewer. Review the following pull request changes and provide:
-          1. Summary of changes
-          2. Potential issues or bugs
-          3. Code quality assessment
-          4. Security concerns (if any)
-          5. Performance considerations
-          6. Suggestions for improvement
+          # Create review prompt file
+          cat > prompt.txt <<'PROMPT_EOF'
+You are an expert code reviewer. Review the following pull request changes and provide:
+1. Summary of changes
+2. Potential issues or bugs
+3. Code quality assessment
+4. Security concerns (if any)
+5. Performance considerations
+6. Suggestions for improvement
 
-          PR Title: ${{ github.event.pull_request.title }}
-          PR Description: ${{ github.event.pull_request.body }}
+PROMPT_EOF
 
-          Changes:
-          \`\`\`diff
-          ${DIFF}
-          \`\`\`
+          echo "PR Title: $PR_TITLE" >> prompt.txt
+          echo "PR Description: $PR_BODY" >> prompt.txt
+          echo "" >> prompt.txt
+          echo "Changes:" >> prompt.txt
+          echo '```diff' >> prompt.txt
+          cat pr.diff >> prompt.txt
+          echo '```' >> prompt.txt
+          echo "" >> prompt.txt
+          echo "Provide a concise, actionable review in markdown format." >> prompt.txt
 
-          Provide a concise, actionable review in markdown format."
+          # Escape the prompt for JSON
+          PROMPT_JSON=$(jq -Rs . < prompt.txt)
 
           # Call Claude API
           REVIEW=$(curl -s https://api.anthropic.com/v1/messages \
             -H "content-type: application/json" \
             -H "x-api-key: $ANTHROPIC_API_KEY" \
             -H "anthropic-version: 2023-06-01" \
-            -d '{
-              "model": "claude-sonnet-4-20250514",
-              "max_tokens": 4096,
-              "messages": [{
-                "role": "user",
-                "content": "'"$(echo "$REVIEW_PROMPT" | jq -Rs .)"'"
+            -d "{
+              \"model\": \"claude-sonnet-4-20250514\",
+              \"max_tokens\": 4096,
+              \"messages\": [{
+                \"role\": \"user\",
+                \"content\": $PROMPT_JSON
               }]
-            }' | jq -r '.content[0].text')
+            }" | jq -r '.content[0].text')
 
           # Save review to file
           echo "$REVIEW" > review.md
