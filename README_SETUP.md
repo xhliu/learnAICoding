@@ -54,3 +54,4 @@ You can customize the review prompt in the workflow file at line 39-55.
 - **No review appears**: Check that `ANTHROPIC_API_KEY` secret is set correctly
 - **API errors**: Verify your API key has sufficient credits
 - **Workflow doesn't run**: Check the Actions tab for error messages
+
