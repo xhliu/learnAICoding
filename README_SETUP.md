@@ -56,3 +56,4 @@ You can customize the review prompt in the workflow file at line 39-55.
 - **Workflow doesn't run**: Check the Actions tab for error messages
 
 # Test automated review
+# Trigger sync event
