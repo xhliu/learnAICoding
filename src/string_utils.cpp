@@ -34,12 +34,23 @@ std::vector<std::string> split(const std::string& str, char delimiter) {
 }
 
 std::string trim(const std::string& str) {
+    if (str.empty()) {
+        return str;
+    }
+
     auto start = std::find_if(str.begin(), str.end(),
                               [](unsigned char ch) { return !std::isspace(ch); });
     auto end = std::find_if(str.rbegin(), str.rend(),
                             [](unsigned char ch) { return !std::isspace(ch); }).base();
 
     return (start < end) ? std::string(start, end) : std::string();
+}
+
+bool startsWith(const std::string& str, const std::string& prefix) {
+    if (prefix.length() > str.length()) {
+        return false;
+    }
+    return str.compare(0, prefix.length(), prefix) == 0;
 }
 
 }
