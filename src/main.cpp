@@ -1,33 +1,36 @@
+#include <cstdint>
+#include <cstring>
 #include <iostream>
+#include <stdexcept>
+#include <string>
 #include <vector>
-#include "string_utils.h"
+
+struct Msg {
+  uint16_t type;
+  std::string payload;
+};
+
+// Parses: [type:2 bytes little-endian][len:2 bytes little-endian][payload:len bytes]
+Msg parseMessage(const uint8_t* data, size_t n) {
+  if (n < 4) throw std::runtime_error("short header");
+
+  uint16_t type = static_cast<uint16_t>(data[0] | (data[1] << 8));
+  uint16_t len  = static_cast<uint16_t>(data[2] | (data[3] << 8));
+
+  // ❌ BUG: doesn't verify n >= 4 + len
+  std::vector<char> buf(len);
+  std::memcpy(buf.data(), data + 4, len);  // OOB read if len > n-4
+
+  return Msg{type, std::string(buf.begin(), buf.end())};
+}
 
 int main() {
-    std::cout << "C++ Sample Project - String Utilities Demo\n";
-    std::cout << "==========================================\n\n";
+    // Example: type=1, len=5, payload="Hello"
+    uint8_t data[] = {0x01, 0x00, 0x05, 0x00, 'H', 'e', 'l', 'l', 'o'};
 
-    // Test toUpper
-    std::string testStr = "Hello, World!";
-    std::cout << "Original: " << testStr << "\n";
-    std::cout << "Upper: " << StringUtils::toUpper(testStr) << "\n";
-    std::cout << "Lower: " << StringUtils::toLower(testStr) << "\n\n";
-
-    // Test split
-    std::string csvStr = "apple,banana,cherry,date";
-    std::cout << "Splitting: " << csvStr << "\n";
-    std::vector<std::string> tokens = StringUtils::split(csvStr, ',');
-    std::cout << "Tokens:\n";
-    for (const auto& token : tokens) {
-        std::cout << "  - " << token << "\n";
-    }
-    std::cout << "\n";
-
-    // Test trim
-    std::string spacedStr = "   Hello World   ";
-    std::cout << "Original with spaces: '" << spacedStr << "'\n";
-    std::cout << "Trimmed: '" << StringUtils::trim(spacedStr) << "'\n\n";
-
-    std::cout << "Demo completed successfully!\n";
+    Msg msg = parseMessage(data, sizeof(data));
+    std::cout << "Type: " << msg.type << "\n";
+    std::cout << "Payload: " << msg.payload << "\n";
 
     return 0;
 }
