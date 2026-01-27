@@ -20,7 +20,6 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 # Source files
 set(SOURCES
     src/main.cpp
-    src/string_utils.cpp
 )
 
 # Create executable
@@ -28,5 +27,14 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Set output directory
 set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+# Test executable for message parser
+add_executable(test_message_parser
+    tests/test_message_parser.cpp
+)
+
+set_target_properties(test_message_parser PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
